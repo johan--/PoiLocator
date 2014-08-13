@@ -10,6 +10,6 @@ You can get a trial access [here](http://xserver.ptvgroup.com/en-uk/products/ptv
 
 The JavaScript Libraries i'm using:
 
-* Leaflet - a JavaScript Library for Mobile-Friendly Interactive Maps http://leafletjs.com/
-* Leaflet-pip - a simple point-in-polygon function in JavaScript to find all POIs within an isochrone https://github.com/mapbox/leaflet-pip
-* http://lunrjs.com/ - a full text search engine in JavaScript to find all POIs matching a text.
+* [Leaflet](http://leafletjs.com/) - a JavaScript library for mobile-friendly interactive maps 
+* [Leaflet-pip](https://github.com/mapbox/leaflet-pip) - a simple point-in-polygon function in JavaScript to find all POIs within an isochrone 
+* [lunr.js](http://lunrjs.com/) - a full text search engine in JavaScript to find all POIs matching a text.
