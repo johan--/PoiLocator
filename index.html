@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>POI Locator Demo</title>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+        }
+
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="./leaflet-pip.min.js"></script>
+    <script src="./lunr.min.js"></script>
+    <script src="./NonTiledLayer.js"></script>
+    <script src="./NonTiledLayer.WMS.js"></script>
+    <script src="./helper.js"></script>
+    <script src="./token.js"></script>
+    <script type="text/javascript" src="baufeldt.js"></script>
+    <script type="text/javascript">
+        // enter your token here!
+        var isoFeature;
+        var highlightedPois = [];
+        var isBusy = false;
+        var marker;
+        var horizon = 600;
+
+        // create full text index
+        var index = lunr(function () {
+            this.field('description', { boost: 10 })
+            this.ref('id')
+        })
+        for (var i = 0; i < poiData.features.length; i++) {
+            index.add({
+                id: i,
+                description: poiData.features[i].description
+            });
+        }
+
+        // url we're sending the request to
+        var isoUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/calculateIsochrones';
+        var findAddressUrl = 'https://xlocate-eu-n-test.cloud.ptvgroup.com/xlocate/rs/XLocate/findAddressByText';
+        var xMapUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com';
+
+        var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, HERE';
+        var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
+
+        // set up the map
+        var map = new L.Map('map').setView(mapLocation, 14);
+        map.on('click', onMapClick);
+        var sandbox = getLayers(xMapUrl + '/WMS/WMS', "-sandbox", token, attribution);
+        sandbox.addTo(map);
+
+        // init pois
+        L.geoJson(poiData, {
+            pointToLayer: style
+        }).addTo(map);
+
+        // add input control
+        var info = L.control();
+        info.onAdd = function (map) {
+            var container = L.DomUtil.create('div', 'info leaflet-bar');
+            var clickcmd = "if(!isBusy)findByAddress(document.getElementById('f1').value);";
+            var fuzzySearchCmd = "if(!isBusy)findFuzzy(document.getElementById('f2').value);";
+            var html =
+            '<div>Click on map or find near address</div>' +
+            '<div>' +
+            '<input type="text" id="f1" value="Hamburg, Rathausmarkt">' +
+            '<input type="button" value="Find" onClick="' + clickcmd + '">' +
+            '</div>' +
+            '<div>' +
+            '<input type="radio" name="horizon" checked="true" onclick="setHorizon(600);">10 min' +
+            '<input type="radio" name="horizon" onclick="setHorizon(1200);">20 min' +
+            '<input type="radio" name="horizon" onclick="setHorizon(1800);">30 min' +
+            '</div><br>' +
+            '<div>Or find stores by name</div>' +
+            '<div>' +
+            '<input type="text" id="f2" value="Metro">' +
+            '<input type="button" value="Find" onClick="' + fuzzySearchCmd + '">' +
+            '</div>';
+            container.innerHTML = html;
+            fixClickPropagationSoItWorksForF___ingIE11(container);
+            return container;
+        };
+        info.addTo(map);
+
+        function setHorizon(hor) {
+            horizon = hor;
+            findByIso(mapLocation, horizon);
+        }
+
+        function onMapClick(e) {
+            if (isBusy)
+                return;
+
+            mapLocation = e.latlng;
+            findByIso(mapLocation, horizon);
+        }
+
+        function findFuzzy(name) {
+            cleanupMarkers();
+
+            var res = index.search(name);
+            for (var i = 0; i < res.length; i++) {
+                highlightPoi(poiData.features[res[i].ref], 'marker-green');
+            }
+            setBounds(highlightedPois);
+        }
+
+        function findByAddress(adr) {
+            var request = {
+                "address": adr,
+                "country": "D",
+                "options": [],
+                "sorting": [],
+                "additionalFields": [],
+                "callerContext": {
+                    "properties": [
+                      {
+                          "key": "CoordFormat",
+                          "value": "OG_GEODECIMAL"
+                      },
+                      {
+                          "key": "Profile",
+                          "value": "default"
+                      }
+                    ]
+                }
+            };
+
+            runRequest(
+                findAddressUrl,
+                request,
+                token,
+                function (response) {
+                    isBusy = false;
+                    mapLocation = new L.LatLng(response.resultList[0].coordinates.point.y, response.resultList[0].coordinates.point.x);
+                    findByIso(mapLocation, horizon);
+                },
+                function (xhr) {
+                    isBusy = false;
+                });
+        }
+
+        function findByIso(latlng, hor) {
+            cleanupMarkers();
+
+            var c = 'marker-red';
+            marker = L.marker(latlng, {
+                zIndexOffset: 1000,
+                icon: new L.Icon.Default({
+                    iconUrl: "icons/" + c + ".png",
+                    iconRetinaUrl: "icons/" + c + "-2x.png"
+                })
+            }).addTo(map);
+            marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
+
+            isBusy = true;
+
+            var request = {
+                "sink": {
+                    "coords": [
+                      {
+                          "point": {
+                              "x": latlng.lng,
+                              "y": latlng.lat
+                          }
+                      }
+                    ],
+                    "linkType": "NEXT_SEGMENT"
+                },
+                "options": [],
+                "isoOptions": {
+                    "isoDetail": "POLYS_ONLY",
+                    "polygonCalculationMode": "NODE_BASED",
+                    "expansionDesc": {
+                        "expansionType": "EXP_TIME",
+                        "horizons": [
+                          hor
+                        ]
+                    }
+                },
+                "callerContext": {
+                    "properties": [
+                      {
+                          "key": "CoordFormat",
+                          "value": "OG_GEODECIMAL"
+                      },
+                      {
+                          "key": "ResponseGeometry",
+                          "value": "WKT"
+                      },
+                      {
+                          "key": "Profile",
+                          "value": "pedestrian"
+                      }
+                    ]
+                }
+            };
+
+            runRequest(
+                isoUrl,
+                request,
+                token,
+                function (response) {
+                    var x = isoToPoly(response.isochrones[0].polys.wkt);
+
+                    var feature = {
+                        "type": "Feature",
+                        "properties": {
+                            "style": {
+                                weight: 4, color: "#222", opacity: 1,
+                                fillColor: "#fff", fillOpacity: 0.5
+                            }
+                        }
+                    };
+
+                    feature.geometry = { type: 'Polygon', coordinates: x };
+
+                    isoFeature = L.geoJson([feature], {
+                        style: function (feature) {
+                            return feature.properties && feature.properties.style;
+                        }
+                    });
+
+                    isoFeature.on('click', onMapClick);
+
+                    for (var i = 0; i < poiData.features.length; i++) {
+                        if (leafletPip.pointInLayer(poiData.features[i].geometry.coordinates, isoFeature).length > 0) {
+                            highlightPoi(poiData.features[i], 'marker-green');
+                        }
+                    }
+
+                    isoFeature.addTo(map);
+
+                    map.fitBounds(isoFeature.getBounds());
+
+                    isBusy = false;
+                },
+                function (xhr) {
+                    isBusy = false;
+                });
+            }
+
+        function setBounds(features) {
+            var arr = [];
+            for (var i = 0; i < features.length; i++) {
+                arr.push(features[i]._latlng);
+            }
+            var bounds = new L.LatLngBounds(arr);
+            map.fitBounds(bounds);
+        }
+
+        function cleanupMarkers() {
+            for (var i = 0; i < highlightedPois.length; i++) {
+                map.removeLayer(highlightedPois[i]);
+            }
+            highlightedPois = [];
+
+            if (isoFeature)
+                map.removeLayer(isoFeature);
+
+            if (marker)
+                map.removeLayer(marker);
+        }
+
+        function highlightPoi(feature, c) {
+            var highlightedPoi = L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+                zIndexOffset: 1000,
+                icon: new L.Icon.Default({
+                    iconUrl: "icons/" + c + ".png",
+                    iconRetinaUrl: "icons/" + c + "-2x.png"
+                })
+            }).addTo(map);
+
+            highlightedPoi.bindPopup(feature.description);
+
+            highlightedPois.push(highlightedPoi);
+        }
+
+        function style(feature, latlng) {
+            var x =
+                L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+                    icon: new L.Icon.Default({
+                        iconUrl: 'icons/marker-icon.png',
+                        iconRetinaUrl: 'icons/marker-icon-2x.png'
+                    })
+                });
+            x.bindPopup(feature.description);
+            return x;
+        }
+    </script>
+</body>
+</html>
