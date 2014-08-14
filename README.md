@@ -15,13 +15,13 @@ The JavaScript Libraries i'm using:
 * [Leaflet-pip](https://github.com/mapbox/leaflet-pip) - a simple point-in-polygon function in JavaScript to find all POIs within an isochrone 
 * [lunr.js](http://lunrjs.com/) - a full text search engine in JavaScript to find all POIs matching a text.
 
-# Set-up the base map (in progress...)
+## Set-up the base map (in progress...)
 
-# Prepare your data (in progess...)
+## Prepare your data (in progess...)
 
-# Add your data to the map (in progess...)
+## Add your data to the map (in progess...)
 
-# Search by proximity (in progess...)
+## Search by proximity (in progess...)
 
-# Search by text (in progess...)
+## Search by text (in progess...)
 
