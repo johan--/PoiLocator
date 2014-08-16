@@ -19,16 +19,16 @@ The JavaScript Libraries i'm using:
 First, you need to setup-up your html to include a Leaflet map. This quick-start-guide shows the required steps http://leafletjs.com/examples/quick-start.html. To display the xServer basemap, you'll also have to add the NonTiledLayer and NonTiledLayer.js to your includes. The initial setup which display the basemap in Hamburg is then:
 
 ```js
-    // set up the map
-    var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, TOMTOM';
-    var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
-    var xMapWmsUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com/WMS/WMS';
+// set up the map
+var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, TOMTOM';
+var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
+var xMapWmsUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com/WMS/WMS';
     
-    // create a map in the "map" div, set the view to a given place and zoom
-    var map = new L.Map('map').setView(mapLocation, 14);
+// create a map in the "map" div, set the view to a given place and zoom
+var map = new L.Map('map').setView(mapLocation, 14);
 
-    // insert xMap back- and forground layers with sandbox-style
-    getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
+// insert xMap back- and forground layers with sandbox-style
+getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
 ```
 
 The helper function returns two leaflet layers for wich build-up the xServer basemap
