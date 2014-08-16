@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <title>POI Locator Demo</title>
     <meta charset="utf-8" />
@@ -12,7 +13,9 @@
             margin: 0;
         }
 
-        html, body, #map {
+        html,
+        body,
+        #map {
             height: 100%;
         }
 
@@ -24,6 +27,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="map"></div>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -55,7 +59,9 @@
 
         // create full text index
         var index = lunr(function () {
-            this.field('description', { boost: 10 })
+            this.field('description', {
+                boost: 10
+            })
             this.ref('id')
         })
         for (var i = 0; i < poiData.features.length; i++) {
@@ -68,6 +74,7 @@
         // url we're sending the request to
         var isoUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/calculateIsochrones';
         var findAddressUrl = 'https://xlocate-eu-n-test.cloud.ptvgroup.com/xlocate/rs/XLocate/findAddressByText';
+        var searchForReachableObjectsUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/searchForReachableObjects';
 
         map.on('click', onMapClick);
 
@@ -83,21 +90,21 @@
             var clickcmd = "if(!isBusy)findByAddress(document.getElementById('f1').value);";
             var fuzzySearchCmd = "if(!isBusy)findFuzzy(document.getElementById('f2').value);";
             var html =
-            '<div>Click on map or find near address</div>' +
-            '<div>' +
-            '<input type="text" id="f1" value="Hamburg, Rathausmarkt">' +
-            '<input type="button" value="Find" onClick="' + clickcmd + '">' +
-            '</div>' +
-            '<div>' +
-            '<input type="radio" name="horizon" checked="true" onclick="setHorizon(600);">10 min' +
-            '<input type="radio" name="horizon" onclick="setHorizon(1200);">20 min' +
-            '<input type="radio" name="horizon" onclick="setHorizon(1800);">30 min' +
-            '</div><br>' +
-            '<div>Or find stores by name</div>' +
-            '<div>' +
-            '<input type="text" id="f2" value="Metro">' +
-            '<input type="button" value="Find" onClick="' + fuzzySearchCmd + '">' +
-            '</div>';
+                '<div>Click on map or find near address</div>' +
+                '<div>' +
+                '<input type="text" id="f1" value="Hamburg, Rathausmarkt">' +
+                '<input type="button" value="Find" onClick="' + clickcmd + '">' +
+                '</div>' +
+                '<div>' +
+                '<input type="radio" name="horizon" checked="true" onclick="setHorizon(600);">10 min' +
+                '<input type="radio" name="horizon" onclick="setHorizon(1200);">20 min' +
+                '<input type="radio" name="horizon" onclick="setHorizon(1800);">30 min' +
+                '</div><br>' +
+                '<div>Or find stores by name</div>' +
+                '<div>' +
+                '<input type="text" id="f2" value="Metro">' +
+                '<input type="button" value="Find" onClick="' + fuzzySearchCmd + '">' +
+                '</div>';
             container.innerHTML = html;
             fixClickPropagationSoItWorksForF___ingIE11(container);
             return container;
@@ -135,16 +142,13 @@
                 "sorting": [],
                 "additionalFields": [],
                 "callerContext": {
-                    "properties": [
-                      {
-                          "key": "CoordFormat",
-                          "value": "OG_GEODECIMAL"
-                      },
-                      {
-                          "key": "Profile",
-                          "value": "default"
-                      }
-                    ]
+                    "properties": [{
+                        "key": "CoordFormat",
+                        "value": "OG_GEODECIMAL"
+                    }, {
+                        "key": "Profile",
+                        "value": "default"
+                    }]
                 }
             };
 
@@ -179,14 +183,12 @@
 
             var request = {
                 "sink": {
-                    "coords": [
-                      {
-                          "point": {
-                              "x": latlng.lng,
-                              "y": latlng.lat
-                          }
-                      }
-                    ],
+                    "coords": [{
+                        "point": {
+                            "x": latlng.lng,
+                            "y": latlng.lat
+                        }
+                    }],
                     "linkType": "NEXT_SEGMENT"
                 },
                 "options": [],
@@ -196,25 +198,21 @@
                     "expansionDesc": {
                         "expansionType": "EXP_TIME",
                         "horizons": [
-                          hor
+                            hor
                         ]
                     }
                 },
                 "callerContext": {
-                    "properties": [
-                      {
-                          "key": "CoordFormat",
-                          "value": "OG_GEODECIMAL"
-                      },
-                      {
-                          "key": "ResponseGeometry",
-                          "value": "WKT"
-                      },
-                      {
-                          "key": "Profile",
-                          "value": "pedestrian"
-                      }
-                    ]
+                    "properties": [{
+                        "key": "CoordFormat",
+                        "value": "OG_GEODECIMAL"
+                    }, {
+                        "key": "ResponseGeometry",
+                        "value": "WKT"
+                    }, {
+                        "key": "Profile",
+                        "value": "pedestrian"
+                    }]
                 }
             };
 
@@ -229,13 +227,19 @@
                         "type": "Feature",
                         "properties": {
                             "style": {
-                                weight: 4, color: "#222", opacity: 1,
-                                fillColor: "#fff", fillOpacity: 0.5
+                                weight: 4,
+                                color: "#222",
+                                opacity: 1,
+                                fillColor: "#fff",
+                                fillOpacity: 0.5
                             }
                         }
                     };
 
-                    feature.geometry = { type: 'Polygon', coordinates: x };
+                    feature.geometry = {
+                        type: 'Polygon',
+                        coordinates: x
+                    };
 
                     isoFeature = L.geoJson([feature], {
                         style: function (feature) {
@@ -260,7 +264,72 @@
                 function (xhr) {
                     isBusy = false;
                 });
-            }
+        }
+
+        function findByReachableObjects(latlng, hor) {
+            cleanupMarkers();
+
+            var c = 'marker-red';
+            marker = L.marker(latlng, {
+                zIndexOffset: 1000,
+                icon: new L.Icon.Default({
+                    iconUrl: "icons/" + c + ".png",
+                    iconRetinaUrl: "icons/" + c + "-2x.png"
+                })
+            }).addTo(map);
+            marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
+
+            isBusy = true;
+
+            var request = {
+                "sink": {
+                    "coords": [{
+                        "point": {
+                            "x": latlng.lng,
+                            "y": latlng.lat
+                        }
+                    }],
+                    "linkType": "NEXT_SEGMENT"
+                },
+                "binaryPathDesc": null,
+                "options": [],
+                "reachableObjectOptions": {
+                    "isoDetail": "POLYS_ONLY",
+                    "polygonCalculationMode": "NODE_BASED",
+                    "expansionDesc": {
+                        "expansionType": "EXP_TIME",
+                        "horizons": [
+                            hor
+                        ]
+                    }
+                },
+                "callerContext": {
+                    "properties": [{
+                        "key": "CoordFormat",
+                        "value": "OG_GEODECIMAL"
+                    }, {
+                        "key": "ResponseGeometry",
+                        "value": "WKT"
+                    }, {
+                        "key": "Profile",
+                        "value": "pedestrian"
+                    }]
+                }
+            };
+
+            runRequest(
+                isoUrl,
+                request,
+                token,
+                function (response) {
+                    alert(response);
+ 
+                    isBusy = false;
+                },
+                function (xhr) {
+                    isBusy = false;
+                });
+        }
 
         function setBounds(features) {
             var arr = [];
@@ -299,16 +368,17 @@
         }
 
         function style(feature, latlng) {
-            var x =
+            var style =
                 L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
                     icon: new L.Icon.Default({
-                        iconUrl: 'icons/marker-icon.png',
-                        iconRetinaUrl: 'icons/marker-icon-2x.png'
+                        iconUrl: 'icons/marker-grey.png',
+                        iconRetinaUrl: 'icons/marker-grey-2x.png'
                     })
                 });
-            x.bindPopup(feature.description);
-            return x;
+            style.bindPopup(feature.description);   
+            return style;
         }
     </script>
 </body>
+
 </html>
