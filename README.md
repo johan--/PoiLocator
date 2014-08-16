@@ -58,7 +58,9 @@ function getXMapBaseLayers(url, style, token, attribution) {
 
 ## Prepare your data
 
-Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i've written a tool which reads the .mdb and writes it as text-file as GeoJson. The same practice should also apply to "real" databases, Excel or .csv.
+Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i've written a tool which reads the .mdb and writes it to a text-file as GeoJson. The same practice should also apply to "real" databases, Excel or .csv.
+
+GeoJson needs the coordinates [WGS84](http://de.wikipedia.org/wiki/World_Geodetic_System_1984) values, which is some kind of de-facto standard for web maps.
 
 1. **If your soucrce table has a Longitude- and Latitude-field (or Lon,Lat or WGS_x,WGS_y or similar)** - Then you're fine. This is what Leaflet expects.
 2. **If your data uses PTV coordinate formats (PTV_GEODECIMAL, PTV_MERCATOR, ...)** - Then you can use my little [GeoTransform](https://gist.github.com/oliverheilig/7029947) code snippet, which does the converstion for the various PTV formats. You can also try it online [here](http://jsil.org/try/#7029947). Before writing the point, you can convert it to Wgs84 with the Trans() function.
