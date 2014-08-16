@@ -78,7 +78,7 @@ We can add the data as script file then
 ```js
 <script type="text/javascript" src="baufeldt.js"></script>
 ```
-
+The we cann insert the data with the L.geoJson layer and a custom poi-style that sets a grey push-pin and binds the descriptioni as popup.
 ```js
 // add our p0is
 L.geoJson(poiData, {
