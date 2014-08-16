@@ -80,25 +80,21 @@ We can add the data as script file then
 ```
 
 ```js
-// init pois
+// add our p0is
 L.geoJson(poiData, {
-    pointToLayer: style
-}).addTo(map);
-
-function style(feature, latlng) {
-    var style =
-        L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+    pointToLayer: function (feature, latlng) {
+        var item =  L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
             icon: new L.Icon.Default({
                 iconUrl: 'icons/marker-grey.png',
                 iconRetinaUrl: 'icons/marker-grey-2x.png'
             })
         });
-    style.bindPopup(feature.description);   
-    return style;
-}
- ```       
+        item.bindPopup(feature.description);
+        return item;
+    }
+}).addTo(map);
+```       
         
-
 ## Search by proximity (in progess...)
 
 ## Search by text (in progess...)
