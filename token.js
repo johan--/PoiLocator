@@ -1,1 +1,1 @@
-var token = '602826264981627';
+var token = '<insert you xserver internet token here!>';
