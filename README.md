@@ -58,7 +58,7 @@ function getXMapBaseLayers(url, style, token, attribution) {
 
 ## Prepare your data
 
-Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i've written a tool which reads the .mdb and writes it to a text-file as GeoJson. You need Visual Studio or C# Express for Desktop to run the tool https://github.com/oliverheilig/PoiLocator/tree/master/tools/mdbtojson. The same practice should also apply to Excel , .csv or "real" databases.
+Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i've written [https://github.com/oliverheilig/PoiLocator/tree/master/tools/mdbtojson](a tool which reads the .mdb and writes it to a text-file as GeoJson). You need Visual Studio or [C# Express for Desktop](http://www.microsoft.com/en-us/download/details.aspx?id=40787) to run the tool. The same practice should also apply to Excel , .csv or "real" databases.
 
 GeoJson needs the coordinates as [WGS84](http://de.wikipedia.org/wiki/World_Geodetic_System_1984) values, which is some kind of de-facto standard for web maps.
 
