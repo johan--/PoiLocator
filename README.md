@@ -76,11 +76,28 @@ https://github.com/oliverheilig/PoiLocator/blob/master/baufeldt.js
 We can add the data as script file then
 
 ```js
-   <script type="text/javascript" src="baufeldt.js"></script>
+<script type="text/javascript" src="baufeldt.js"></script>
+```
+
 ```js
+// init pois
+L.geoJson(poiData, {
+    pointToLayer: style
+}).addTo(map);
 
-
-
+function style(feature, latlng) {
+    var style =
+        L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+            icon: new L.Icon.Default({
+                iconUrl: 'icons/marker-grey.png',
+                iconRetinaUrl: 'icons/marker-grey-2x.png'
+            })
+        });
+    style.bindPopup(feature.description);   
+    return style;
+}
+ ```       
+        
 
 ## Search by proximity (in progess...)
 
