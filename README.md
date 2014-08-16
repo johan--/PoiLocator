@@ -15,7 +15,28 @@ The JavaScript Libraries i'm using:
 * [Leaflet-pip](https://github.com/mapbox/leaflet-pip) - a simple point-in-polygon function in JavaScript to find all POIs within an isochrone 
 * [lunr.js](http://lunrjs.com/) - a full text search engine in JavaScript to find all POIs matching a text.
 
-## Set-up the base map (in progress...)
+## Set-up the base map
+
+    // returns a layer group for xmap back- and foreground layers
+    function getLayers(url, style, token, attribution) {
+        var background = new L.TileLayer.WMS(url, {
+            maxZoom: 19, minZoom: 0, opacity: 1.0,
+            noWrap: true,
+            layers: style? 'xmap-ajaxbg-' + style : 'xmap-ajaxbg',
+            format: 'image/png', transparent: false,
+            attribution: attribution
+        });
+
+        var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
+            minZoom: 0, opacity: 1.0,
+            layers: style ? 'xmap-ajaxfg-' + style : 'xmap-ajaxfg',
+            format: 'image/png', transparent: true,
+            attribution: attribution,
+        });
+
+        return L.layerGroup([background, foreground]);
+    }
+
 
 ## Prepare your data (in progess...)
 
