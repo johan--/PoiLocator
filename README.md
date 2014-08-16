@@ -60,9 +60,10 @@ function getXMapBaseLayers(url, style, token, attribution) {
 
 Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i'm writing a tool which reads the mdb and writes it as text-file as GeoJson.
 
-1. If your soucrce table has a Longitude and Latitude- Field (or Lat,Lon or WGS84_x,WGS84_y or similar). Then you're fine this is what Leaflet expects.
-2. If you have some PTV coordinate formats. Then you can use my little [GeoTransform](https://gist.github.com/oliverheilig/7029947) code snippet, which does the converstion for the various PTV formats. You can also try it online [here](http://jsil.org/try/#7029947).
-3. 
+1. *If your soucrce table has a Longitude- and Latitude-field (or Lat,Lon or WGS84_x,WGS84_y or similar)* - Then you're fine this is what Leaflet expects.
+2. *If your data uses PTV coordinate formats (PTV_GEODECIMA, PTV_MERCATOR, ...)* - Then you can use my little [GeoTransform](https://gist.github.com/oliverheilig/7029947) code snippet, which does the converstion for the various PTV formats. You can also try it online [here](http://jsil.org/try/#7029947).
+3. *If you have coorindates in other spatial reference systems* - Then you should try to find out what kind of coordinates these are and use some 3rd-party tools to transform into WGS84. Or just jump to step 4.
+4. *If your data isn't geocodes (i.e. you only have addresses without coordinates)* - Then you can use PTV xLocate which is part of your xServer intenet subscription.
 
 ## Add your data to the map (in progess...))
 
