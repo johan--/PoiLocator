@@ -17,8 +17,21 @@ The JavaScript Libraries i'm using:
 
 ## Set-up the base map
 
+    // set up the map
+    var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, TOMTOM';
+    var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
+    var xMapWmsUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com/WMS/WMS';
+    
+    // create a map in the "map" div, set the view to a given place and zoom
+    var map = new L.Map('map').setView(mapLocation, 14);
+
+    // insert xMap back- and forground layers with sandbox-style
+    getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
+
+The helper function returns two leaflet layers for wich build-up the xServer basemap
+
     // returns a layer group for xmap back- and foreground layers
-    function getLayers(url, style, token, attribution) {
+    function getXMapBaseLayers(url, style, token, attribution) {
         var background = new L.TileLayer.WMS(url, {
             maxZoom: 19, minZoom: 0, opacity: 1.0,
             noWrap: true,
