@@ -69,9 +69,16 @@ GeoJson needs the coordinates as [WGS84](http://de.wikipedia.org/wiki/World_Geod
  
 A good resource for testing your outpout result is [GeoJsonLint](http://geojsonlint.com/).
 ## Add your data to the map 
-In our web application we could load the JSON using jQuery. But for static data we also can embed it as JavaScript source. We just take the josn.txt output, add a var ```var poiData =``` at the beginning and a ```;``` at the end. 
+In our web application we could load the JSON using jQuery. But for static data it is easier to embed it as JavaScript source. We just take the josn.txt output of our tool, add a var ```var poiData =``` at the beginning and a ```;``` at the end, so it looks like this. 
 
 https://github.com/oliverheilig/PoiLocator/blob/master/baufeldt.js
+
+We can add the data as script file then
+
+```js
+   <script type="text/javascript" src="baufeldt.js"></script>
+```js
+
 
 
 
