@@ -31,7 +31,7 @@ var map = new L.Map('map').setView(mapLocation, 14);
 getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
 ```
 
-The helper function returns two leaflet layers for wich build-up the xServer basemap
+The helper function returns two leaflet layers that build-up the xServer basemap
 
 ```js
 // returns a layer group for xmap back- and foreground layers
