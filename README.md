@@ -18,6 +18,7 @@ The JavaScript Libraries i'm using:
 ## Set-up the base map
 First, you need to setup-up your html to include a Leaflet map. This quick-start-guide shows the required steps http://leafletjs.com/examples/quick-start.html. To display the xServer basemap, you'll also have to add the NonTiledLayer and NonTiledLayer.js to your includes. The initial setup which display the basemap in Hamburg is then:
 
+```js
     // set up the map
     var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, TOMTOM';
     var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
@@ -28,6 +29,7 @@ First, you need to setup-up your html to include a Leaflet map. This quick-start
 
     // insert xMap back- and forground layers with sandbox-style
     getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
+```
 
 The helper function returns two leaflet layers for wich build-up the xServer basemap
 
