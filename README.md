@@ -5,7 +5,9 @@ A tutorial that shows how to visualize and search points of interest with JavaSc
 
 http://oliverheilig.github.io/PoiLocator/
 
-Unlike other tutorials (e.g. https://github.com/oliverheilig/SpatialTutorial/wiki), it doen't need any  middleware, but runs with only xServer and JavaScript. To run the sample you need an xServer internet token. 
+This tutorial runs with only xServer and JavaScript, you don't need any database or middleware. One restriction is, that this type solution only works for a limited number of POIs that can be completely loaded into the browser. I you have thousands or millions POIs, you need another set of tools, usually including a spatial database and a middleware. You should take a look at this tutorial then https://github.com/oliverheilig/SpatialTutorial/wiki
+
+To run the sample you need an xServer internet token. 
 You can get a trial access [here](http://xserver.ptvgroup.com/en-uk/products/ptv-xserver-internet/test/). 
 
 The JavaScript Libraries i'm using:
