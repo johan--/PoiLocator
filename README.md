@@ -65,12 +65,12 @@ GeoJson needs the coordinates as [WGS84](http://de.wikipedia.org/wiki/World_Geod
 1. **If your soucrce table has a Longitude- and Latitude-field (or Lon,Lat or WGS_x,WGS_y or similar)** - Then you're fine. This is what Leaflet expects.
 2. **If your data uses PTV coordinate formats (PTV_GEODECIMAL, PTV_MERCATOR, ...)** - Then you can use my little [GeoTransform](https://gist.github.com/oliverheilig/7029947) code snippet, which does the converstion for the various PTV formats. You can also try it online [here](http://jsil.org/try/#7029947). Before writing the point, you can convert it to Wgs84 with the Trans() function.
 3. **If you have coordinates in other spatial reference systems** - Then you should try to find out what kind of coordinates these are and use some 3rd-party tools to transform into WGS84. Or just jump to step 4.
-4. **If your data isn't geocoded (i.e. you only have addresses without coordinates)** - Then you can use PTV xLocate which is part of your xServer intenet subscription. [You find a tutorial how to use xServer in C# here](http://xserver.ptvgroup.com/en-uk/cookbook/c/accessing-ptv-xserver-internet-in-net-applications/).
+4. **If your data isn't geocoded (i.e. you only have addresses without coordinates)** - Then you can use PTV xLocate which is part of your xServer internet subscription. [You find a tutorial how to use xServer in C# here](http://xserver.ptvgroup.com/en-uk/cookbook/c/accessing-ptv-xserver-internet-in-net-applications/).
  
 A good resource for testing your outpout result is [GeoJsonLint](http://geojsonlint.com/).
-
 ## Add your data to the map 
-In our web application we could load the JSON using jQuery. But for static data we also can embed it as JavaScript source.
+In our web application we could load the JSON using jQuery. But for static data we also can embed it as JavaScript source. We just take the josn.txt output, add a var poiData = at the beginning and a semicolon at the end. 
+
 
 ## Search by proximity (in progess...)
 
