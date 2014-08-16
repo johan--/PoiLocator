@@ -13,7 +13,7 @@ You can get a trial access [here](http://xserver.ptvgroup.com/en-uk/products/ptv
 The JavaScript Libraries i'm using:
 
 * [Leaflet](http://leafletjs.com/) - a JavaScript library for mobile-friendly interactive maps 
-* [Leaflet.NonTiledLayer](https://github.com/ptv-logistics/Leaflet.NonTiledLayer) - a Leaflet layer for single-tile WNS layers, needed for the xServer internet BaseMap.
+* [Leaflet.NonTiledLayer](https://github.com/ptv-logistics/Leaflet.NonTiledLayer) - a Leaflet layer for single-tile WMS layers, needed for the xServer internet BaseMap.
 * [Leaflet-pip](https://github.com/mapbox/leaflet-pip) - a simple point-in-polygon function in JavaScript to find all POIs within an isochrone 
 * [lunr.js](http://lunrjs.com/) - a full text search engine in JavaScript to find all POIs matching a text.
 
@@ -62,7 +62,7 @@ Now we want to display our locations on the map. The easiest way for Leaflet is 
 
 1. **If your soucrce table has a Longitude- and Latitude-field (or Lon,Lat or WGS_x,WGS_y or similar)** - Then you're fine. This is what Leaflet expects.
 2. **If your data uses PTV coordinate formats (PTV_GEODECIMAL, PTV_MERCATOR, ...)** - Then you can use my little [GeoTransform](https://gist.github.com/oliverheilig/7029947) code snippet, which does the converstion for the various PTV formats. You can also try it online [here](http://jsil.org/try/#7029947). Before writing the point, you can convert it to Wgs84 with the Trans() function.
-3. **If you have coorindates in other spatial reference systems** - Then you should try to find out what kind of coordinates these are and use some 3rd-party tools to transform into WGS84. Or just jump to step 4.
+3. **If you have coordinates in other spatial reference systems** - Then you should try to find out what kind of coordinates these are and use some 3rd-party tools to transform into WGS84. Or just jump to step 4.
 4. **If your data isn't geocoded (i.e. you only have addresses without coordinates)** - Then you can use PTV xLocate which is part of your xServer intenet subscription.
 
 ## Add your data to the map (in progess...))
