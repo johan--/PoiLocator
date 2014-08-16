@@ -56,9 +56,11 @@ function getXMapBaseLayers(url, style, token, attribution) {
 }
 ```
 
-## Prepare your data (in progess...)
+## Prepare your data
 
-## Add your data to the map (in progess...)
+Now we want to display our locations on the map. The easiest way for Leaflet is to provide [GeoJson](http://geojson.org/)
+
+## Add your data to the map (in progess...))
 
 ## Search by proximity (in progess...)
 
