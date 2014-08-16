@@ -3,7 +3,7 @@ PoiLocator
 
 A tutorial that shows how to visualize and search points of interest with JavaScript and PTV xServer internet
 
-http://oliverheilig.github.io/PoiLocator/
+http://ptv-logistics.github.io/PoiLocator/
 
 This tutorial requires only xServer and JavaScript, you don't need any database or middleware. One restriction is that this type solution only works for a limited number of POIs that can be loaded into the browser as a whole. I you have thousands or millions POIs, you need another set of tools, usually including a spatial database and a middleware. You should take a look at this tutorial then https://github.com/oliverheilig/SpatialTutorial/wiki
 
@@ -58,7 +58,7 @@ function getXMapBaseLayers(url, style, token, attribution) {
 
 ## Prepare your data
 
-Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i've written [a tool which reads the .mdb and writes it to a text-file as GeoJson](https://github.com/oliverheilig/PoiLocator/tree/master/tools/mdbtojson). You need Visual Studio or [C# Express for Desktop](http://www.microsoft.com/en-us/download/details.aspx?id=40787) to run the tool. The same practice should also apply to Excel , .csv or "real" databases.
+Now we want to display our locations on the map. The easiest way for Leaflet is to provide the data as [GeoJson](http://geojson.org/). I'm having some old location data stored in a Microsoft Access database (.mdb). So i've written [a tool which reads the .mdb and writes it to a text-file as GeoJson](https://github.com/ptv-logistics/PoiLocator/tree/master/tools/mdbtojson). You need Visual Studio or [C# Express for Desktop](http://www.microsoft.com/en-us/download/details.aspx?id=40787) to run the tool. The same practice should also apply to Excel , .csv or "real" databases.
 
 GeoJson needs the coordinates as [WGS84](http://de.wikipedia.org/wiki/World_Geodetic_System_1984) values, which is some kind of de-facto standard for web maps.
 
@@ -71,7 +71,7 @@ A good resource for testing your outpout result is [GeoJsonLint](http://geojsonl
 ## Add your data to the map 
 In our web application we could load the JSON using jQuery. But for static data it is easier to embed it as JavaScript source. We just take the josn.txt output of our tool, add a var ```var poiData =``` at the beginning and a ```;``` at the end, so it looks like this. 
 
-https://github.com/oliverheilig/PoiLocator/blob/master/baufeldt.js
+https://github.com/ptv-logistics/PoiLocator/blob/master/baufeldt.js
 
 We can add the data as script file then
 
