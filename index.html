@@ -36,7 +36,17 @@
     <script src="./token.js"></script>
     <script type="text/javascript" src="baufeldt.js"></script>
     <script type="text/javascript">
-        // enter your token here!
+        // set up the map
+        var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, TOMTOM';
+        var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
+        var xMapWmsUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com/WMS/WMS';
+
+        // create a map in the "map" div, set the view to a given place and zoom
+        var map = new L.Map('map').setView(mapLocation, 14);
+
+        // insert xMap back- and forground layers with sandbox-style
+        getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
+
         var isoFeature;
         var highlightedPois = [];
         var isBusy = false;
@@ -58,16 +68,8 @@
         // url we're sending the request to
         var isoUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/calculateIsochrones';
         var findAddressUrl = 'https://xlocate-eu-n-test.cloud.ptvgroup.com/xlocate/rs/XLocate/findAddressByText';
-        var xMapUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com';
 
-        var attribution = '<a href="http://www.ptvgroup.com">PTV</a>, HERE';
-        var mapLocation = new L.LatLng(53.550556, 9.993333); // HH
-
-        // set up the map
-        var map = new L.Map('map').setView(mapLocation, 14);
         map.on('click', onMapClick);
-        var sandbox = getLayers(xMapUrl + '/WMS/WMS', "-sandbox", token, attribution);
-        sandbox.addTo(map);
 
         // init pois
         L.geoJson(poiData, {

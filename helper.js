@@ -1,26 +1,22 @@
-// returns a layer group for xmap back- and foreground layers
-function getLayers(url, style, token, attribution) {
-    var background = new L.TileLayer.WMS(url, {
-        maxZoom: 19,
-        minZoom: 0,
-        opacity: 1.0,
-        noWrap: true,
-        layers: 'xmap-ajaxbg' + style,
-        format: 'image/gif',
-        transparent: false,
-        attribution: attribution
-    });
+    // returns a layer group for xmap back- and foreground layers
+    function getXMapBaseLayers(url, style, token, attribution) {
+        var background = new L.TileLayer.WMS(url, {
+            maxZoom: 19, minZoom: 0, opacity: 1.0,
+            noWrap: true,
+            layers: style? 'xmap-ajaxbg-' + style : 'xmap-ajaxbg',
+            format: 'image/png', transparent: false,
+            attribution: attribution
+        });
 
-    var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
-        opacity: 1.0,
-        layers: 'xmap-ajaxfg' + style,
-        format: 'image/gif',
-        transparent: true,
-        attribution: attribution,
-    });
+        var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
+            minZoom: 0, opacity: 1.0,
+            layers: style ? 'xmap-ajaxfg-' + style : 'xmap-ajaxfg',
+            format: 'image/png', transparent: true,
+            attribution: attribution,
+        });
 
-    return L.layerGroup([background, foreground]);
-}
+        return L.layerGroup([background, foreground]);
+    }
 
 // my dirty little wkt line string to geojson poly function
 function isoToPoly(wkt) {
