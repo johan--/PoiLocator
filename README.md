@@ -5,7 +5,7 @@ A tutorial that shows how to visualize and search points of interest with JavaSc
 
 http://oliverheilig.github.io/PoiLocator/
 
-This tutorial requires only xServer and JavaScript, you don't need any database or middleware. One restriction is, that this type solution only works for a limited number of POIs that can be completely loaded into the browser. I you have thousands or millions POIs, you need another set of tools, usually including a spatial database and a middleware. You should take a look at this tutorial then https://github.com/oliverheilig/SpatialTutorial/wiki
+This tutorial requires only xServer and JavaScript, you don't need any database or middleware. One restriction is that this type solution only works for a limited number of POIs that can be completely loaded into the browser. I you have thousands or millions POIs, you need another set of tools, usually including a spatial database and a middleware. You should take a look at this tutorial then https://github.com/oliverheilig/SpatialTutorial/wiki
 
 To run the sample you need an xServer internet token. 
 You can get a trial access [here](http://xserver.ptvgroup.com/en-uk/products/ptv-xserver-internet/test/). 
@@ -18,7 +18,7 @@ The JavaScript Libraries i'm using:
 * [lunr.js](http://lunrjs.com/) - a full text search engine in JavaScript to find all POIs matching a text.
 
 ## Set-up the base map
-First, you need to setup-up your html to include a Leaflet map. This quick-start-guide shows the required steps http://leafletjs.com/examples/quick-start.html. To display the xServer basemap, you'll also have to add the NonTiledLayer and NonTiledLayer.js to your includes. The initial setup which display the basemap in Hamburg is then:
+First, you need to setup-up your html to include a Leaflet map. This quick-start-guide shows the required steps http://leafletjs.com/examples/quick-start.html. To display the xServer basemap, you'll also have to add the NonTiledLayer and NonTiledLayer.WMS.js to your includes. The initial setup which displays the basemap in Hamburg:
 
 ```js
 // set up the map
