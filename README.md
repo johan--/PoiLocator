@@ -33,26 +33,26 @@ getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
 
 The helper function returns two leaflet layers for wich build-up the xServer basemap
 
-    // returns a layer group for xmap back- and foreground layers
-    function getXMapBaseLayers(url, style, token, attribution) {
-        var background = new L.TileLayer.WMS(url, {
-            maxZoom: 19, minZoom: 0, opacity: 1.0,
-            noWrap: true,
-            layers: style? 'xmap-ajaxbg-' + style : 'xmap-ajaxbg',
-            format: 'image/png', transparent: false,
-            attribution: attribution
-        });
+```js
+// returns a layer group for xmap back- and foreground layers
+function getXMapBaseLayers(url, style, token, attribution) {
+    var background = new L.TileLayer.WMS(url, {
+        maxZoom: 19, minZoom: 0, opacity: 1.0, noWrap: true,
+        layers: style? 'xmap-ajaxbg-' + style : 'xmap-ajaxbg',
+        format: 'image/png', transparent: false,
+        attribution: attribution
+    });
 
-        var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
-            minZoom: 0, opacity: 1.0,
-            layers: style ? 'xmap-ajaxfg-' + style : 'xmap-ajaxfg',
-            format: 'image/png', transparent: true,
-            attribution: attribution,
-        });
+    var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
+        minZoom: 0, opacity: 1.0,
+        layers: style ? 'xmap-ajaxfg-' + style : 'xmap-ajaxfg',
+        format: 'image/png', transparent: true,
+        attribution: attribution,
+    });
 
-        return L.layerGroup([background, foreground]);
-    }
-
+    return L.layerGroup([background, foreground]);
+}
+```
 
 ## Prepare your data (in progess...)
 
