@@ -51,11 +51,18 @@
         // insert xMap back- and forground layers with sandbox-style
         getXMapBaseLayers(xMapWmsUrl, "sandbox", token, attribution).addTo(map);
 
+        if (!token)
+            alert("you need to configure your xServer internet token in token.js!")
+
+        // add scale control
+        L.control.scale().addTo(map);
+
         var isoFeature;
         var highlightedPois = [];
         var isBusy = false;
         var marker;
         var horizon = 600;
+        var searchMethod = 0;
 
         // create full text index
         var index = lunr(function () {
@@ -74,7 +81,7 @@
         // url we're sending the request to
         var isoUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/calculateIsochrones';
         var findAddressUrl = 'https://xlocate-eu-n-test.cloud.ptvgroup.com/xlocate/rs/XLocate/findAddressByText';
-        var searchForReachableObjectsUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/searchForReachableObjects';
+        var searchForReachableObjectsUrl = 'https://xroute-eu-n-test.cloud.ptvgroup.com/xroute/rs/XRoute/calculateReachableObjects';
 
         map.on('click', onMapClick);
 
@@ -96,6 +103,11 @@
                 '<input type="button" value="Find" onClick="' + clickcmd + '">' +
                 '</div>' +
                 '<div>' +
+                '<input type="radio" name="searchmethod" checked="true" onclick="setSearchMethod(0);">air' +
+                '<input type="radio" name="searchmethod" onclick="setSearchMethod(1);">reach' +
+                '<input type="radio" name="searchmethod" onclick="setSearchMethod(2);">iso' +
+                '</div><br>' +
+                '<div>' +
                 '<input type="radio" name="horizon" checked="true" onclick="setHorizon(600);">10 min' +
                 '<input type="radio" name="horizon" onclick="setHorizon(1200);">20 min' +
                 '<input type="radio" name="horizon" onclick="setHorizon(1800);">30 min' +
@@ -111,9 +123,23 @@
         };
         info.addTo(map);
 
+        function findNearestObjects() {
+            if (searchMethod == 0)
+                findByAirline(mapLocation, horizon);
+            else if (searchMethod == 1)
+                findByReachableObjects(mapLocation, horizon);
+            else
+                findByIso(mapLocation, horizon);
+        }
+
+        function setSearchMethod(method) {
+            searchMethod = method;
+            findNearestObjects();
+        }
+
         function setHorizon(hor) {
             horizon = hor;
-            findByIso(mapLocation, horizon);
+            findNearestObjects();
         }
 
         function onMapClick(e) {
@@ -121,7 +147,7 @@
                 return;
 
             mapLocation = e.latlng;
-            findByIso(mapLocation, horizon);
+            findNearestObjects();
         }
 
         function findFuzzy(name) {
@@ -266,6 +292,40 @@
                 });
         }
 
+        function filterByAirline(latlng, hor) {
+            var result = new Array();
+            var range = hor /*=s*/ * 6 /* km/h */ / 3.6 /*=m/s */;
+
+            for (var i = 0; i < poiData.features.length; i++) {
+                var p = L.latLng(poiData.features[i].geometry.coordinates[1], poiData.features[i].geometry.coordinates[0]);
+                if (latlng.distanceTo(p) < range) {
+                    result.push(poiData.features[i]);
+                }
+            }
+
+            return result;
+        }
+
+        function findByAirline(latlng, hor) {
+            cleanupMarkers();
+
+            var c = 'marker-red';
+            marker = L.marker(latlng, {
+                zIndexOffset: 1000,
+                icon: new L.Icon.Default({
+                    iconUrl: "icons/" + c + ".png",
+                    iconRetinaUrl: "icons/" + c + "-2x.png"
+                })
+            }).addTo(map);
+            marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
+
+            var found = filterByAirline(latlng, hor);
+
+            for (var i = 0; i < found.length; i++) {
+                    highlightPoi(found[i], 'marker-green');
+                }
+        }
+
         function findByReachableObjects(latlng, hor) {
             cleanupMarkers();
 
@@ -278,6 +338,20 @@
                 })
             }).addTo(map);
             marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
+
+            var candidates = filterByAirline(latlng, hor);
+            var llocations = new Array();
+            for (var i = 0; i < candidates.length; i++) {
+                llocations.push({
+                    "coords": [{
+                        "point": {
+                            "x": candidates[i].geometry.coordinates[0],
+                            "y": candidates[i].geometry.coordinates[1]
+                        }
+                    }],
+                    "linkType": "NEXT_SEGMENT"
+                });
+            }
 
             isBusy = true;
 
@@ -292,17 +366,13 @@
                     "linkType": "NEXT_SEGMENT"
                 },
                 "binaryPathDesc": null,
+                "locations": llocations,
                 "options": [],
-                "reachableObjectOptions": {
-                    "isoDetail": "POLYS_ONLY",
-                    "polygonCalculationMode": "NODE_BASED",
-                    "expansionDesc": {
-                        "expansionType": "EXP_TIME",
-                        "horizons": [
-                            hor
-                        ]
-                    }
-                },
+                "expansionDesc": {
+                    "expansionType": "EXP_TIME",
+                    "horizons": [
+                      hor
+                    ]},
                 "callerContext": {
                     "properties": [{
                         "key": "CoordFormat",
@@ -318,13 +388,16 @@
             };
 
             runRequest(
-                isoUrl,
+                searchForReachableObjectsUrl,
                 request,
                 token,
                 function (response) {
-                    alert(response);
- 
                     isBusy = false;
+                    for (var i = 0; i < response.reachInfo.length; i++) {
+                        if (response.reachInfo[i].reachable) {
+                            highlightPoi(candidates[i], 'marker-green');
+                        }
+                    }
                 },
                 function (xhr) {
                     isBusy = false;
