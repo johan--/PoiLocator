@@ -125,6 +125,10 @@
         };
         info.addTo(map);
 
+        function setBusy(busy) {
+            isBusy = busy;
+        }
+
         function findNearestObjects() {
             cleanupMarkers();
 
@@ -197,17 +201,16 @@
                 request,
                 token,
                 function (response) {
-                    isBusy = false;
                     mapLocation = new L.LatLng(response.resultList[0].coordinates.point.y, response.resultList[0].coordinates.point.x);
                     findNearestObjects();
                 },
                 function (xhr) {
-                    isBusy = false;
+                    setBusy(false);
                 });
         }
 
         function findByIso(latlng, hor) {
-            isBusy = true;
+            setBusy(true);
 
             var request = {
                 "sink": {
@@ -287,10 +290,10 @@
 
                     map.fitBounds(isoFeature.getBounds());
 
-                    isBusy = false;
+                    setBusy(false);
                 },
                 function (xhr) {
-                    isBusy = false;
+                    setBusy(false);
                 });
         }
 
@@ -313,7 +316,7 @@
             var found = filterByAirline(latlng, hor);
 
             for (var i = 0; i < found.length; i++) {
-                highlightPoi(found[i].data, 'marker-green', found[i].distance + "m");
+                highlightPoi(found[i].data, 'marker-green', Math.round(found[i].distance) + "m");
             }
 
             setBounds(highlightedPois, latlng);
@@ -334,7 +337,7 @@
                 });
             }
 
-            isBusy = true;
+            setBusy(true);
 
             var request = {
                 "sink": {
@@ -374,17 +377,17 @@
                 request,
                 token,
                 function (response) {
-                    isBusy = false;
+                    setBusy(false);
                     for (var i = 0; i < response.reachInfo.length; i++) {
                         if (response.reachInfo[i].reachable) {
-                            highlightPoi(candidates[i], 'marker-green');
+                            highlightPoi(candidates[i].data, 'marker-green', response.reachInfo[i].routeInfo.distance + "m");
                         }
                     }
 
                     setBounds(highlightedPois, latlng);
                 },
                 function (xhr) {
-                    isBusy = false;
+                    setBusy(false);
                 });
         }
 
