@@ -57,6 +57,7 @@
         // add scale control
         L.control.scale().addTo(map);
 
+        var searchLocation;
         var isoFeature;
         var highlightedPois = [];
         var isBusy = false;
@@ -130,24 +131,27 @@
         }
 
         function findNearestObjects() {
+            if (!searchLocation)
+                return;
+
             cleanupMarkers();
 
             var c = 'marker-red';
-            marker = L.marker(mapLocation, {
+            marker = L.marker(searchLocation, {
                 zIndexOffset: 1000,
                 icon: new L.Icon.Default({
                     iconUrl: "icons/" + c + ".png",
                     iconRetinaUrl: "icons/" + c + "-2x.png"
                 })
             }).addTo(map);
-            marker.bindPopup(latFormatter(mapLocation.lat) + ", " + lngFormatter(mapLocation.lng));
+            marker.bindPopup(latFormatter(searchLocation.lat) + ", " + lngFormatter(searchLocation.lng));
 
             if (searchMethod == 0)
-                findByAirline(mapLocation, horizon);
+                findByAirline(searchLocation, horizon);
             else if (searchMethod == 1)
-                findByReachableObjects(mapLocation, horizon);
+                findByReachableObjects(searchLocation, horizon);
             else
-                findByIso(mapLocation, horizon);
+                findByIso(searchLocation, horizon);
         }
 
         function setSearchMethod(method) {
@@ -164,7 +168,7 @@
             if (isBusy)
                 return;
 
-            mapLocation = e.latlng;
+            searchLocation = e.latlng;
             findNearestObjects();
         }
 
@@ -196,15 +200,19 @@
                 }
             };
 
+            setBusy(true);
+
             runRequest(
                 findAddressUrl,
                 request,
                 token,
                 function (response) {
-                    mapLocation = new L.LatLng(response.resultList[0].coordinates.point.y, response.resultList[0].coordinates.point.x);
+                    var firstResult = response.resultList[0].coordinates.point;
+                    searchLocation = new L.LatLng(firstResult.y, firstResult.x);
                     findNearestObjects();
                 },
                 function (xhr) {
+                    alert(xhr);
                     setBusy(false);
                 });
         }
@@ -302,7 +310,8 @@
             var range = hor /*=s*/ * 6 /* km/h */ / 3.6 /*=m/s */;
 
             for (var i = 0; i < poiData.features.length; i++) {
-                var p = L.latLng(poiData.features[i].geometry.coordinates[1], poiData.features[i].geometry.coordinates[0]);
+                var poiLocation = poiData.features[i].geometry.coordinates;
+                var p = L.latLng(poiLocation[1], poiLocation[0]);
                 var distance = latlng.distanceTo(p);
                 if (distance < range) {
                     result.push({ distance: distance, data: poiData.features[i] });
@@ -324,13 +333,14 @@
 
         function findByReachableObjects(latlng, hor) {
             var candidates = filterByAirline(latlng, hor);
-            var llocations = new Array();
+            var locations = new Array();
             for (var i = 0; i < candidates.length; i++) {
-                llocations.push({
+                var location = candidates[i].data.geometry.coordinates;
+                locations.push({
                     "coords": [{
                         "point": {
-                            "x": candidates[i].data.geometry.coordinates[0],
-                            "y": candidates[i].data.geometry.coordinates[1]
+                            "x": location[0],
+                            "y": location[1]
                         }
                     }],
                     "linkType": "NEXT_SEGMENT"
@@ -350,7 +360,7 @@
                     "linkType": "NEXT_SEGMENT"
                 },
                 "binaryPathDesc": null,
-                "locations": llocations,
+                "locations": locations,
                 "options": [],
                 "expansionDesc": {
                     "expansionType": "EXP_TIME",
