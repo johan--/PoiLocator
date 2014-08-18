@@ -101,12 +101,14 @@
                 '<div>' +
                 '<input type="text" id="f1" value="Hamburg, Rathausmarkt">' +
                 '<input type="button" value="Find" onClick="' + clickcmd + '">' +
-                '</div>' +
-                '<div>' +
-                '<input type="radio" name="searchmethod" checked="true" onclick="setSearchMethod(0);">air' +
-                '<input type="radio" name="searchmethod" onclick="setSearchMethod(1);">reach' +
-                '<input type="radio" name="searchmethod" onclick="setSearchMethod(2);">iso' +
                 '</div><br>' +
+                '<div>Search method</div>' +
+                '<div>' +
+                '<input type="radio" name="searchmethod" checked="true" onclick="setSearchMethod(0);">airline' +
+                '<input type="radio" name="searchmethod" onclick="setSearchMethod(1);">route' +
+                '<input type="radio" name="searchmethod" onclick="setSearchMethod(2);">isochrone' +
+                '</div><br>' +
+                '<div>Horizon</div>' +
                 '<div>' +
                 '<input type="radio" name="horizon" checked="true" onclick="setHorizon(600);">10 min' +
                 '<input type="radio" name="horizon" onclick="setHorizon(1200);">20 min' +
@@ -124,6 +126,18 @@
         info.addTo(map);
 
         function findNearestObjects() {
+            cleanupMarkers();
+
+            var c = 'marker-red';
+            marker = L.marker(mapLocation, {
+                zIndexOffset: 1000,
+                icon: new L.Icon.Default({
+                    iconUrl: "icons/" + c + ".png",
+                    iconRetinaUrl: "icons/" + c + "-2x.png"
+                })
+            }).addTo(map);
+            marker.bindPopup(latFormatter(mapLocation.lat) + ", " + lngFormatter(mapLocation.lng));
+
             if (searchMethod == 0)
                 findByAirline(mapLocation, horizon);
             else if (searchMethod == 1)
@@ -185,7 +199,7 @@
                 function (response) {
                     isBusy = false;
                     mapLocation = new L.LatLng(response.resultList[0].coordinates.point.y, response.resultList[0].coordinates.point.x);
-                    findByIso(mapLocation, horizon);
+                    findNearestObjects();
                 },
                 function (xhr) {
                     isBusy = false;
@@ -193,18 +207,6 @@
         }
 
         function findByIso(latlng, hor) {
-            cleanupMarkers();
-
-            var c = 'marker-red';
-            marker = L.marker(latlng, {
-                zIndexOffset: 1000,
-                icon: new L.Icon.Default({
-                    iconUrl: "icons/" + c + ".png",
-                    iconRetinaUrl: "icons/" + c + "-2x.png"
-                })
-            }).addTo(map);
-            marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
-
             isBusy = true;
 
             var request = {
@@ -298,55 +300,34 @@
 
             for (var i = 0; i < poiData.features.length; i++) {
                 var p = L.latLng(poiData.features[i].geometry.coordinates[1], poiData.features[i].geometry.coordinates[0]);
-                if (latlng.distanceTo(p) < range) {
-                    result.push(poiData.features[i]);
+                var distance = latlng.distanceTo(p);
+                if (distance < range) {
+                    result.push({ distance: distance, data: poiData.features[i] });
                 }
             }
-
+            
             return result;
         }
 
         function findByAirline(latlng, hor) {
-            cleanupMarkers();
-
-            var c = 'marker-red';
-            marker = L.marker(latlng, {
-                zIndexOffset: 1000,
-                icon: new L.Icon.Default({
-                    iconUrl: "icons/" + c + ".png",
-                    iconRetinaUrl: "icons/" + c + "-2x.png"
-                })
-            }).addTo(map);
-            marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
-
             var found = filterByAirline(latlng, hor);
 
             for (var i = 0; i < found.length; i++) {
-                    highlightPoi(found[i], 'marker-green');
-                }
+                highlightPoi(found[i].data, 'marker-green', found[i].distance + "m");
+            }
+
+            setBounds(highlightedPois, latlng);
         }
 
         function findByReachableObjects(latlng, hor) {
-            cleanupMarkers();
-
-            var c = 'marker-red';
-            marker = L.marker(latlng, {
-                zIndexOffset: 1000,
-                icon: new L.Icon.Default({
-                    iconUrl: "icons/" + c + ".png",
-                    iconRetinaUrl: "icons/" + c + "-2x.png"
-                })
-            }).addTo(map);
-            marker.bindPopup(latFormatter(latlng.lat) + ", " + lngFormatter(latlng.lng));
-
             var candidates = filterByAirline(latlng, hor);
             var llocations = new Array();
             for (var i = 0; i < candidates.length; i++) {
                 llocations.push({
                     "coords": [{
                         "point": {
-                            "x": candidates[i].geometry.coordinates[0],
-                            "y": candidates[i].geometry.coordinates[1]
+                            "x": candidates[i].data.geometry.coordinates[0],
+                            "y": candidates[i].data.geometry.coordinates[1]
                         }
                     }],
                     "linkType": "NEXT_SEGMENT"
@@ -372,7 +353,8 @@
                     "expansionType": "EXP_TIME",
                     "horizons": [
                       hor
-                    ]},
+                    ]
+                },
                 "callerContext": {
                     "properties": [{
                         "key": "CoordFormat",
@@ -398,17 +380,21 @@
                             highlightPoi(candidates[i], 'marker-green');
                         }
                     }
+
+                    setBounds(highlightedPois, latlng);
                 },
                 function (xhr) {
                     isBusy = false;
                 });
         }
 
-        function setBounds(features) {
+        function setBounds(features, center) {
             var arr = [];
             for (var i = 0; i < features.length; i++) {
                 arr.push(features[i]._latlng);
             }
+            if (center)
+                arr.push(center);
             var bounds = new L.LatLngBounds(arr);
             map.fitBounds(bounds);
         }
@@ -426,7 +412,7 @@
                 map.removeLayer(marker);
         }
 
-        function highlightPoi(feature, c) {
+        function highlightPoi(feature, c, additionalInfo) {
             var highlightedPoi = L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
                 zIndexOffset: 1000,
                 icon: new L.Icon.Default({
@@ -435,7 +421,10 @@
                 })
             }).addTo(map);
 
-            highlightedPoi.bindPopup(feature.description);
+            var popUp = feature.description;
+            if (additionalInfo)
+                popUp = popUp + "<br>" + additionalInfo;
+            highlightedPoi.bindPopup(popUp);
 
             highlightedPois.push(highlightedPoi);
         }
@@ -448,7 +437,7 @@
                         iconRetinaUrl: 'icons/marker-grey-2x.png'
                     })
                 });
-            style.bindPopup(feature.description);   
+            style.bindPopup(feature.description);
             return style;
         }
     </script>
