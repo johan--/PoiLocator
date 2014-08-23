@@ -290,7 +290,7 @@
 
                     for (var i = 0; i < poiData.features.length; i++) {
                         if (leafletPip.pointInLayer(poiData.features[i].geometry.coordinates, isoFeature).length > 0) {
-                            highlightPoi(poiData.features[i], 'marker-green');
+                            highlightPoi(poiData.features[i], 'marker-green', true);
                         }
                     }
 
@@ -325,7 +325,7 @@
             var found = filterByAirline(latlng, hor);
 
             for (var i = 0; i < found.length; i++) {
-                highlightPoi(found[i].data, 'marker-green', Math.round(found[i].distance) + "m");
+                highlightPoi(found[i].data, 'marker-green', Math.round(found[i].distance) + "m", true);
             }
 
             setBounds(highlightedPois, latlng);
@@ -390,7 +390,7 @@
                     setBusy(false);
                     for (var i = 0; i < response.reachInfo.length; i++) {
                         if (response.reachInfo[i].reachable) {
-                            highlightPoi(candidates[i].data, 'marker-green', response.reachInfo[i].routeInfo.distance + "m");
+                            highlightPoi(candidates[i].data, 'marker-green', response.reachInfo[i].routeInfo.distance + "m", true);
                         }
                     }
 
@@ -425,8 +425,15 @@
                 map.removeLayer(marker);
         }
 
-        function highlightPoi(feature, c, additionalInfo) {
-            var highlightedPoi = L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+        function highlightPoi(feature, c, additionalInfo, drawSpiderLine) {
+            var latlon = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
+
+            var popUp = feature.description;
+            if (additionalInfo)
+                popUp = popUp + "<br>" + additionalInfo;
+            highlightedPoi.bindPopup(popUp);
+
+            var highlightedPoi = L.marker(latlon, {
                 zIndexOffset: 1000,
                 icon: new L.Icon.Default({
                     iconUrl: "icons/" + c + ".png",
@@ -434,21 +441,18 @@
                 })
             }).addTo(map);
 
-            var popUp = feature.description;
-            if (additionalInfo)
-                popUp = popUp + "<br>" + additionalInfo;
-            highlightedPoi.bindPopup(popUp);
+            if (drawSpiderLine) {
+                var spidlerLineline = L.polyline([searchLocation, latlon], { color: 'red' }).addTo(map)
+                highlightedPois.push(spidlerLineline);
+                spidlerLineline.bindPopup(popUp);
+            }
 
             highlightedPois.push(highlightedPoi);
         }
 
         function style(feature, latlng) {
             var style =
-                L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
-                    icon: new L.Icon.Default({
-                        iconUrl: 'icons/marker-grey.png',
-                        iconRetinaUrl: 'icons/marker-grey-2x.png'
-                    })
+                L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
                 });
             style.bindPopup(feature.description);
             return style;
