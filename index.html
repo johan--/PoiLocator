@@ -286,15 +286,16 @@
                         }
                     });
 
-                    isoFeature.on('click', onMapClick);
+                    isoFeature.on('click', onMapClick); 
+                    isoFeature.addTo(map);
 
                     for (var i = 0; i < poiData.features.length; i++) {
                         if (leafletPip.pointInLayer(poiData.features[i].geometry.coordinates, isoFeature).length > 0) {
-                            highlightPoi(poiData.features[i], 'marker-green', true);
+                            highlightPoi(poiData.features[i], 'marker-green', null, true);
                         }
                     }
 
-                    isoFeature.addTo(map);
+  
 
                     map.fitBounds(isoFeature.getBounds());
 
@@ -452,8 +453,7 @@
 
         function style(feature, latlng) {
             var style =
-                L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
-                });
+                L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { });
             style.bindPopup(feature.description);
             return style;
         }
