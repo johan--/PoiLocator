@@ -431,7 +431,6 @@
             var popUp = feature.description;
             if (additionalInfo)
                 popUp = popUp + "<br>" + additionalInfo;
-            highlightedPoi.bindPopup(popUp);
 
             var highlightedPoi = L.marker(latlon, {
                 zIndexOffset: 1000,
@@ -440,6 +439,7 @@
                     iconRetinaUrl: "icons/" + c + "-2x.png"
                 })
             }).addTo(map);
+            highlightedPoi.bindPopup(popUp);
 
             if (drawSpiderLine) {
                 var spidlerLineline = L.polyline([searchLocation, latlon], { color: 'red' }).addTo(map)
