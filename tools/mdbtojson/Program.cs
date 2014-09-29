@@ -34,7 +34,7 @@ namespace mdbtojson
                                 w.Write(",");
 
                             string str = string.Format(CultureInfo.InvariantCulture,
-                                @"{{""geometry"": {{""type"": ""Point"",""coordinates"": [{1}, {2}]}},""type"": ""Feature"",""id"": ""{0}"",""description"": ""{3}""}}",
+                                @"{{""geometry"": {{""type"": ""Point"",""coordinates"": [{1}, {2}]}},""type"": ""Feature"",""id"": ""{0}"",""description"": ""{3}"", ""properties"": []}}",
                                 id, x, y, description);
 
                             w.Write(str);
