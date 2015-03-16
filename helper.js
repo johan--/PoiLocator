@@ -3,14 +3,14 @@
         var background = new L.TileLayer.WMS(url, {
             maxZoom: 19, minZoom: 0, opacity: 1.0,
             noWrap: true,
-            layers: style? 'xmap-ajaxbg-' + style : 'xmap-ajaxbg',
+            layers: style? 'xmap-' + style + '-bg': 'xmap-ajaxbg',
             format: 'image/png', transparent: false,
             attribution: attribution
         });
 
         var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
             minZoom: 0, opacity: 1.0,
-            layers: style ? 'xmap-ajaxfg-' + style : 'xmap-ajaxfg',
+            layers: style ? 'xmap-' + style + 'fg' : 'xmap-ajaxfg',
             format: 'image/png', transparent: true,
             attribution: attribution,
         });
