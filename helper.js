@@ -10,7 +10,7 @@
 
         var foreground = new L.NonTiledLayer.WMS(url + "?xtok=" + token, {
             minZoom: 0, opacity: 1.0,
-            layers: style ? 'xmap-' + style + 'fg' : 'xmap-ajaxfg',
+            layers: style ? 'xmap-' + style + '-fg' : 'xmap-ajaxfg',
             format: 'image/png', transparent: true,
             attribution: attribution,
         });
