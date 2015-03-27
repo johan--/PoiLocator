@@ -1,3 +1,3 @@
 // The token below is for internal use only - consider getting your own token!
-// This token is valid until 2015-05-22T06:39:17Z and was auto-generated @ 2015-03-26T22:27:58Z.
-var token = '333741081737732';
+// This token is valid until 2015-06-19T19:02:30Z and was auto-generated @ 2015-03-27T22:25:49Z.
+var token = '561457579709432';
